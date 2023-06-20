@@ -7,7 +7,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "predeploy": "npm run build",
+    "predeploy": "npm run build && touch dist/.nojekyll && touch dist/CNAME && echo \"pemilu2019.kawalc1.org\" > dist/CNAME",
     "deploy": "gh-pages -d dist",
     "build": "webpack --config webpack.prod.js",
     "start": "webpack-dev-server --open --config webpack.dev.js"
