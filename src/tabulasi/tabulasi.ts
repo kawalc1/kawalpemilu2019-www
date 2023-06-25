@@ -49,6 +49,55 @@ function updatePageHash(param: PageParam) {
     history.replaceState({}, 'Kawal Pemilu - Jaga Suara 2019', location.pathname + h)
 }
 
+interface TippyInstance {
+    _isFetching: boolean
+    props: any
+    setContent(content: string | HTMLElement): void
+    hide(): void
+}
+
+function addTooltip(photoId: string, imageFile: string) {
+    tippy(`#${photoId}`, {
+        placement: 'right-start',
+        touch: false,
+        onCreate(instance: TippyInstance) {
+            instance._isFetching = false;
+        },
+        onShow(instance: TippyInstance) {
+            if (instance._isFetching) {
+                return;
+            }
+
+            instance._isFetching = true;
+            fetch(imageFile)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`${response.status} ${response.statusText}`);
+                    }
+                    return response.blob()
+                })
+                .then((blob) => {
+                    const src = URL.createObjectURL(blob);
+                    const image = new Image();
+                    image.style.display = 'block';
+                    image.style.width = '150px';
+                    image.src = src;
+                    instance.setContent(image);
+                    instance.props['maxWidth'] = '170px';
+                })
+                .catch(() => {
+                    instance.setContent('');
+                    instance.hide()
+
+                })
+                .finally(() => {
+                    instance._isFetching = false;
+                });
+        }
+    });
+}
+
+window.addTooltip = addTooltip
 
 function xhr(url: string, cb: (txt: string) => void) {
     var oReq = new XMLHttpRequest();
