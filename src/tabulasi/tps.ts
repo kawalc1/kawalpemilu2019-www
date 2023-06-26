@@ -98,7 +98,7 @@ export class TpsRenderer {
         var pendingClass = data && getSumValue(data.sum, 'pending') ? 'pending' : ''
 
         var s = `<div id="tps-${param.id}-${tpsNo}" class="tps tps-${tpsNo} ${janggalClass} ${pendingClass}">`
-        var tpsUrl = `https://kawalpemilu.org/#${param.type}:${param.id}/${tpsNo}`
+        var tpsUrl = `https://pemilu2019.kawalc1.org/#${param.type}:${param.id}/${tpsNo}`
 
         // info
         s += '<div class="info">'
