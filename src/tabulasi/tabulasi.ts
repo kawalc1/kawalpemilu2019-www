@@ -51,9 +51,11 @@ function updatePageHash(param: PageParam) {
 
 interface TippyInstance {
     _isFetching: boolean
+    _failedToLoad: boolean
     props: any
     setContent(content: string | HTMLElement): void
     hide(): void
+    disable(): void
 }
 
 function addTooltip(photoId: string, imageFile: string) {
@@ -61,14 +63,8 @@ function addTooltip(photoId: string, imageFile: string) {
         placement: 'right-start',
         touch: false,
         onCreate(instance: TippyInstance) {
-            instance._isFetching = false;
-        },
-        onShow(instance: TippyInstance) {
-            if (instance._isFetching) {
-                return;
-            }
-
             instance._isFetching = true;
+            instance._failedToLoad = true;
             fetch(imageFile)
                 .then((response) => {
                     if (!response.ok) {
@@ -84,15 +80,22 @@ function addTooltip(photoId: string, imageFile: string) {
                     image.src = src;
                     instance.setContent(image);
                     instance.props['maxWidth'] = '170px';
+                    instance._failedToLoad = false
                 })
                 .catch(() => {
                     instance.setContent('');
-                    instance.hide()
+                    instance._failedToLoad = true;
+                    instance.disable();
 
                 })
                 .finally(() => {
                     instance._isFetching = false;
                 });
+        },
+        onShow(instance: TippyInstance) {
+            if (instance._isFetching || instance._failedToLoad) {
+                return;
+            }
         }
     });
 }
